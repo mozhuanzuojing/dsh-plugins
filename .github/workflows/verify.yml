@@ -51,20 +51,6 @@ jobs:
           DSH_REACT_HOME: ${{ runner.temp }}/reacthome
         run: node plugins/dsh-sidebar-pins/_verify/review-probes.mjs
 
-  # dsh-remote-wsl is Windows-only at runtime, but its test suite is pure Node
-  # (installs nothing) and skips the bash-dependent cases when bash cannot run a
-  # script — that probe now actually executes a script, so the skip is honest.
-  remote-wsl:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-      - name: Unit tests
-        working-directory: plugins/dsh-remote-wsl
-        run: node --experimental-strip-types --test test/*.test.ts
-
   # dsh-plugin-love builds and tests with its own devDependencies.
   love:
     runs-on: ubuntu-latest

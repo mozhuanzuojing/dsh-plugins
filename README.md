@@ -2,23 +2,27 @@
 
 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 插件集合。每个插件一个子目录，可单独安装。
 
-## 插件
+## 本仓库的插件
 
 | 插件 | 一句话 | 版本 |
 |---|---|---|
 | [dsh-sidebar-pins](plugins/dsh-sidebar-pins/) | 把左侧栏的全局面板条目收进「更多」菜单，逐项控制归属，选择会被记住 | 0.1.0 |
 | [dsh-plugin-love](plugins/dsh-plugin-love/) | 「爱」：读第三方 DSH 插件源码，按后端/前端/UI/UX/性能/AI 时代六维给出带证据的审查（工具 `love_review`） | 0.1.1 |
-| [dsh-remote-wsl](plugins/dsh-remote-wsl/) | 把 WSL 发行版当作远端执行宿主：状态、终端、常驻 agent、Web UI 窗口、桌面版本对齐 | 0.2.0 |
 
-三个插件都是 **bundle 形态**，装法相同（见下）。各自的配置项、设计边界与已知限制写在各自目录的 README 里。
-
-### 各自需要什么
+两个插件都是 **bundle 形态**，装法相同（见下）。各自的配置项、设计边界与已知限制写在各自目录的 README 里。
 
 | 插件 | 平台 | 额外要求 |
 |---|---|---|
 | dsh-sidebar-pins | 任意 | 无 |
 | dsh-plugin-love | 任意 | 无（构建/测试需要 `pnpm install`） |
-| dsh-remote-wsl | **仅 Windows 宿主 + WSL2** | 本机要有可用的 WSL2 发行版；`distro` / `wslHome` 留空即自动探测默认发行版与登录用户家目录，也可显式指定 |
+
+## 独立仓库的插件
+
+这些插件有自己的仓库与发布历史，**不在本仓库内**，请到各自仓库获取：
+
+| 插件 | 仓库 | 一句话 |
+|---|---|---|
+| dsh-remote-wsl | [mozhuanzuojing/dsh-remote-wsl](https://github.com/mozhuanzuojing/dsh-remote-wsl) | 把 WSL 发行版当作远端执行宿主：状态、终端、常驻 agent、Web UI 窗口、桌面版本对齐（**仅 Windows 宿主 + WSL2**） |
 
 ## 安装某个插件
 
