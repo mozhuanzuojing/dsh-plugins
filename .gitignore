@@ -1,0 +1,18 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+.idea/
+.vscode/
+
+# Node
+node_modules/
+npm-debug.log*
+pnpm-debug.log*
+
+# Local verification scratch (screenshots are kept on purpose)
+**/_verify/*.log
+**/_verify/*.tmp
+**/_verify/*.bak
+**/_verify/*.mut

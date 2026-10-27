@@ -1,0 +1,61 @@
+{
+  "name": "dsh-sidebar-pins",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Fold the left sidebar's global panel entries into the More menu: lists every panel row with a pin toggle, so chosen entries leave the sidebar without losing their panel.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "author": "磨砖做镜 (mozhuanzuojing) <mozhuanzuojing2020@163.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mozhuanzuojing/dsh-plugins.git",
+    "directory": "plugins/dsh-sidebar-pins"
+  },
+  "homepage": "https://github.com/mozhuanzuojing/dsh-plugins/tree/main/plugins/dsh-sidebar-pins#readme",
+  "bugs": {
+    "url": "https://github.com/mozhuanzuojing/dsh-plugins/issues"
+  },
+  "scripts": {
+    "test": "node _verify/render.test.mjs",
+    "test:probes": "node _verify/review-probes.mjs",
+    "test:mutations": "pwsh -NoProfile -File _verify/mutation.ps1"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json",
+    "./client": "./client/index.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "src",
+    "client",
+    "locale",
+    "cordis.patch.yml",
+    "icon.svg",
+    "README.md",
+    "package.json"
+  ],
+  "icon": "./icon.svg",
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "sidebar",
+    "plugin"
+  ],
+  "engines": {
+    "dsh": ">=0.2.0-rc.2"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-sidebar"
+      ]
+    }
+  },
+  "license": "MIT"
+}

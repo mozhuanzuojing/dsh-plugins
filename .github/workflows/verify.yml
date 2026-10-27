@@ -1,0 +1,56 @@
+name: verify
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # The plugin ships no runtime dependencies, but its verification suites
+      # render the registered component with a real React, so React is installed
+      # here (test-only) via DSH_REACT_HOME.
+      - name: Install test-only React
+        run: |
+          mkdir -p "$RUNNER_TEMP/reacthome"
+          cd "$RUNNER_TEMP/reacthome"
+          npm init -y >/dev/null
+          npm install --no-audit --no-fund react@19 react-dom@19
+
+      - name: Syntax check every plugin client
+        run: |
+          for f in plugins/*/client/*.js; do
+            echo "checking $f"
+            node --check "$f"
+          done
+
+      - name: Behaviour suites
+        env:
+          DSH_REACT_HOME: ${{ runner.temp }}/reacthome
+        run: |
+          for d in plugins/*/; do
+            if [ -f "$d/_verify/render.test.mjs" ]; then
+              echo "=== $d behaviour suite ==="
+              node "$d/_verify/render.test.mjs"
+            fi
+          done
+
+      - name: Adversarial probes
+        env:
+          DSH_REACT_HOME: ${{ runner.temp }}/reacthome
+        run: |
+          for d in plugins/*/; do
+            if [ -f "$d/_verify/review-probes.mjs" ]; then
+              echo "=== $d probes ==="
+              node "$d/_verify/review-probes.mjs"
+            fi
+          done

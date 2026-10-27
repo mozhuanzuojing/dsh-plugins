@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Sidebar pins",
+    "description": "Fold the left sidebar's global panel entries into the More menu: toggle each one, the choice is remembered, and every panel stays reachable"
+  }
+}
