@@ -1,0 +1,83 @@
+{
+  "name": "dsh-plugin-love",
+  "version": "0.1.1",
+  "description": "Review third-party DSH plugins from source with evidence-based, constructive criticism across backend, frontend, UI, UX, performance and AI-era readiness.",
+  "type": "module",
+  "main": "lib/index.js",
+  "author": "磨砖做镜 (mozhuanzuojing) <mozhuanzuojing2020@163.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mozhuanzuojing/dsh-plugins.git",
+    "directory": "plugins/dsh-plugin-love"
+  },
+  "homepage": "https://github.com/mozhuanzuojing/dsh-plugins/tree/main/plugins/dsh-plugin-love#readme",
+  "bugs": {
+    "url": "https://github.com/mozhuanzuojing/dsh-plugins/issues"
+  },
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "client.js",
+    "cordis.patch.yml",
+    "locale",
+    "icon.svg",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "icon": "./icon.svg",
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "code-review",
+    "ui",
+    "ux",
+    "performance",
+    "accessibility"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "node scripts/build.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "verify": "node scripts/verify.ts"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.3.0",
+    "esbuild": "^0.25.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "typescript": "^5.9.0",
+    "vitest": "^3.2.0"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-layout",
+        "@deepseek-ai/dsh-client-ui-sidebar"
+      ]
+    }
+  }
+}

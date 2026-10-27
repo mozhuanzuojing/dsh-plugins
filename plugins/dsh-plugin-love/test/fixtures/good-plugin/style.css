@@ -1,0 +1,42 @@
+:root {
+  --wl-radius: 10px;
+}
+
+.wl-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  color: var(--dsw-alias-label-primary);
+  background: var(--dsw-alias-bg-base);
+}
+
+.wl-card {
+  background: var(--dsw-alias-bg-layer-1);
+  border: 1px solid var(--dsw-alias-border-l1);
+  border-radius: var(--wl-radius);
+  padding: 12px;
+}
+
+.wl-btn {
+  min-width: 28px;
+  min-height: 28px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--dsw-alias-label-primary);
+}
+
+.wl-btn:focus-visible {
+  outline: 2px solid var(--dsw-alias-brand-primary);
+  outline-offset: 2px;
+}
+
+.wl-fade {
+  transition: opacity 120ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wl-fade {
+    transition: none;
+  }
+}

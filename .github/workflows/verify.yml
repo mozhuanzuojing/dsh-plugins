@@ -7,50 +7,84 @@ on:
   workflow_dispatch:
 
 jobs:
-  verify:
+  # Every plugin's client half is plain JS served as-is; a syntax error there
+  # takes the whole sidebar down, so it is checked for all plugins first.
+  client-syntax:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: node --check every client bundle
+        run: |
+          set -e
+          shopt -s globstar nullglob
+          files=(plugins/*/client/*.js plugins/*/client.js)
+          for f in "${files[@]}"; do
+            echo "checking $f"
+            node --check "$f"
+          done
 
-      # The plugin ships no runtime dependencies, but its verification suites
-      # render the registered component with a real React, so React is installed
-      # here (test-only) via DSH_REACT_HOME.
+  # dsh-sidebar-pins: behaviour suite + adversarial probes. The suites render the
+  # real component with a real React, which the plugin does not ship, so React is
+  # installed here (test-only) and pointed at with DSH_REACT_HOME.
+  sidebar-pins:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
       - name: Install test-only React
         run: |
           mkdir -p "$RUNNER_TEMP/reacthome"
           cd "$RUNNER_TEMP/reacthome"
           npm init -y >/dev/null
           npm install --no-audit --no-fund react@19 react-dom@19
-
-      - name: Syntax check every plugin client
-        run: |
-          for f in plugins/*/client/*.js; do
-            echo "checking $f"
-            node --check "$f"
-          done
-
-      - name: Behaviour suites
+      - name: Behaviour suite
         env:
           DSH_REACT_HOME: ${{ runner.temp }}/reacthome
-        run: |
-          for d in plugins/*/; do
-            if [ -f "$d/_verify/render.test.mjs" ]; then
-              echo "=== $d behaviour suite ==="
-              node "$d/_verify/render.test.mjs"
-            fi
-          done
-
+        run: node plugins/dsh-sidebar-pins/_verify/render.test.mjs
       - name: Adversarial probes
         env:
           DSH_REACT_HOME: ${{ runner.temp }}/reacthome
-        run: |
-          for d in plugins/*/; do
-            if [ -f "$d/_verify/review-probes.mjs" ]; then
-              echo "=== $d probes ==="
-              node "$d/_verify/review-probes.mjs"
-            fi
-          done
+        run: node plugins/dsh-sidebar-pins/_verify/review-probes.mjs
+
+  # dsh-remote-wsl is Windows-only at runtime, but its test suite is pure Node
+  # (installs nothing) and skips the bash-dependent cases when bash cannot run a
+  # script — that probe now actually executes a script, so the skip is honest.
+  remote-wsl:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Unit tests
+        working-directory: plugins/dsh-remote-wsl
+        run: node --experimental-strip-types --test test/*.test.ts
+
+  # dsh-plugin-love builds and tests with its own devDependencies.
+  love:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+          cache-dependency-path: plugins/dsh-plugin-love/pnpm-lock.yaml
+      # pnpm 11 refuses dependency build scripts unless approved. This plugin
+      # does not need esbuild's postinstall (the platform binary comes from the
+      # optional dependency), so install with strict-dep-builds off instead of
+      # failing the step; the build step below proves esbuild actually works.
+      - name: Install
+        working-directory: plugins/dsh-plugin-love
+        run: pnpm install --frozen-lockfile --config.strict-dep-builds=false
+      - name: Typecheck, tests, build
+        working-directory: plugins/dsh-plugin-love
+        run: pnpm run verify

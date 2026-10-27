@@ -1,0 +1,3 @@
+- insert:
+    - id: other-plugin
+      name: 'other-plugin'

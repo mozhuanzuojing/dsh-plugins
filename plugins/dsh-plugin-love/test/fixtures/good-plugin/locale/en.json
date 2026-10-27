@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Good Fixture",
+    "description": "A fixture that keeps its side effects owned and its copy localized."
+  }
+}

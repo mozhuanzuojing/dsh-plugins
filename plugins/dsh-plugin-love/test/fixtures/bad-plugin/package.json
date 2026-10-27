@@ -1,0 +1,11 @@
+{
+  "name": "bad-plugin",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "index.js",
+  "description": "A deliberately problematic fixture for Love.",
+  "dsh": {
+    "bundle": { "patch": "./cordis.patch.yml" },
+    "client": { "platform": "web", "immediately": true, "inject": [] }
+  }
+}
