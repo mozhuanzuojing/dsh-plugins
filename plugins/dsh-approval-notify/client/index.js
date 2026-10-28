@@ -20,8 +20,14 @@
  *
  * Deliberately no notification while the window is focused — the prompt is
  * already on screen, and a toast on top of it is noise.
+ *
+ * Isolation note: the host concatenates several client bundles into one combo
+ * script. Everything below therefore lives inside an IIFE so top-level
+ * `const`/`let` names (`NS`, `DICTIONARY`, …) cannot collide with a sibling
+ * plugin and crash web boot with "Identifier 'NS' has already been declared".
  */
 
+(() => {
 const NS = 'dsh-approval-notify';
 
 const DICTIONARY = {
@@ -186,3 +192,4 @@ window.__ModuleLoader__.load({
     };
   },
 });
+})();

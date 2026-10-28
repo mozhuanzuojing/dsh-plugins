@@ -25,6 +25,27 @@ jobs:
             echo "checking $f"
             node --check "$f"
           done
+      # node --check is per file; the host CONCATENATES bundles into one combo
+      # script, so two plugins declaring the same top-level name break web boot
+      # with "Identifier 'NS' has already been declared". This compiles the
+      # concatenation, which is where that early error surfaces.
+      - name: Concatenated client bundle compiles (combo scope guard)
+        run: node scripts/check-client-combo.mjs
+      # Host serves client halves as concatenated combo scripts. Bare top-level
+      # const/let across two plugins crashes web boot; prove the concat parses.
+      - name: combo script must not collide on top-level bindings
+        run: |
+          set -e
+          shopt -s globstar nullglob
+          files=(plugins/*/client/*.js plugins/*/client.js)
+          combo="$RUNNER_TEMP/dsh-client-combo.js"
+          : > "$combo"
+          for f in "${files[@]}"; do
+            echo "/* ---- $f ---- */" >> "$combo"
+            cat "$f" >> "$combo"
+            echo >> "$combo"
+          done
+          node -e 'new Function(require("fs").readFileSync(process.argv[1], "utf8"))' "$combo"
 
   # dsh-sidebar-pins: behaviour suite + adversarial probes. The suites render the
   # real component with a real React, which the plugin does not ship, so React is
