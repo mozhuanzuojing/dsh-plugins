@@ -16,3 +16,8 @@ pnpm-debug.log*
 **/_verify/*.tmp
 **/_verify/*.bak
 **/_verify/*.mut
+
+# Session handoff notes are scratch: they carry local paths and machine state and
+# are not meant to be published.
+HANDOFF.md
+HANDOFF-*.md
