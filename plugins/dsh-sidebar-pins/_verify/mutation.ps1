@@ -19,7 +19,8 @@ $newline = "`n"
 $mutations = @(
   @{ n = 'invert-toggle';    from = 'onPinnedChange(id, !nextFolded);';                                       to = 'onPinnedChange(id, nextFolded);' },
   @{ n = 'drop-persist';     from = 'localStorage.setItem(STORAGE_KEY, JSON.stringify([...next]));';         to = 'void 0;' },
-  @{ n = 'drop-defaults';    from = "const DEFAULT_FOLDED = ['remote-wsl', 'paper-os', 'love'];";            to = 'const DEFAULT_FOLDED = [];' },
+  @{ n = 'drop-defaults';    from = "const DEFAULT_FOLDED = ['remote-wsl', 'paper-os', 'love', 'local-workbench'];"; to = 'const DEFAULT_FOLDED = [];' },
+  @{ n = 'drop-workbench-seed'; from = "set.add('local-workbench');";                                       to = 'void 0;' },
   @{ n = 'share-style-tag';  from = 'ensureStyleTag(uiStyleTagId).textContent = CSS;';                       to = 'ensureStyleTag(hideStyleTagId).textContent = CSS;' },
   @{ n = 'never-clear-flag'; from = 'else row.removeAttribute(HIDDEN_FLAG);';                                to = 'else void 0;' },
   @{ n = 'no-retry';         from = ('sync();' + $newline + '          scheduleSettle();');                  to = 'sync();' }

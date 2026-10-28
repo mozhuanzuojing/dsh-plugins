@@ -6,7 +6,7 @@
 
 | 插件 | 一句话 | 版本 |
 |---|---|---|
-| [dsh-sidebar-pins](plugins/dsh-sidebar-pins/) | 把左侧栏的全局面板条目收进「更多」菜单，逐项控制归属，选择会被记住 | 0.1.1 |
+| [dsh-sidebar-pins](plugins/dsh-sidebar-pins/) | 把左侧栏的全局面板条目收进「更多」菜单，逐项控制归属，选择会被记住 | 0.1.2 |
 | [dsh-plugin-love](plugins/dsh-plugin-love/) | 「爱」：读第三方 DSH 插件源码，按后端/前端/UI/UX/性能/AI 时代六维给出带证据的审查（工具 `love_review`） | 0.1.1 |
 | [dsh-approval-notify](plugins/dsh-approval-notify/) | 等待审批时弹系统通知：切到别的窗口也不会漏掉待审批提示 | 0.1.1 |
 

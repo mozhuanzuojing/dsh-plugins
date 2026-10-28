@@ -170,6 +170,7 @@ const PANELS = [
   { options: { id: 'remote-wsl', order: 20, label: () => '远程资源管理器' } },
   { options: { id: 'paper-os', order: 50, label: () => '便签' } },
   { options: { id: 'love', order: 60, label: () => '爱' } },
+  { options: { id: 'local-workbench', order: 65, label: () => '本地工作台' } },
   { options: { id: 'my-extra', order: 70, label: () => '自建面板' } },
 ];
 
@@ -177,6 +178,7 @@ const OWNER_ENTRIES = [
   { id: 'remote-wsl', label: '远程资源管理器', pinned: true, active: false },
   { id: 'paper-os', label: '便签', pinned: true, active: true },
   { id: 'love', label: '爱', pinned: true, active: false },
+  { id: 'local-workbench', label: '本地工作台', pinned: true, active: false },
   { id: 'my-extra', label: '自建面板', pinned: true, active: false },
 ];
 
@@ -220,8 +222,8 @@ assert.ok(!css.includes('aria-label'), 'labels must not be baked into CSS select
 const hiddenNow = domRows.filter((row) => row.hidden).map((row) => row.getAttribute('aria-label'));
 assert.deepEqual(
   hiddenNow.sort(),
-  ['便签', '爱', '远程资源管理器'].sort(),
-  'the three default-folded rows must carry the hidden flag, and nothing else',
+  ['便签', '爱', '远程资源管理器', '本地工作台'].sort(),
+  'the four default-folded rows must carry the hidden flag, and nothing else',
 );
 const moreRow = domRows[domRows.length - 1];
 assert.equal(moreRow.getAttribute('aria-label'), '更多');
@@ -264,8 +266,8 @@ function rowsOf(markup) {
 }
 
 const rows = rowsOf(html);
-// 4 open rows + 4 visibility rows + 1 reset.
-assert.equal(rows.length, 9, 'expected one row per action, no nested buttons');
+// 5 open rows + 5 visibility rows + 1 reset.
+assert.equal(rows.length, 11, 'expected one row per action, no nested buttons');
 
 const unfoldRow = rows.find((row) => row.text === '远程资源管理器 — 显示在侧栏');
 assert.ok(unfoldRow, 'a folded panel must offer "show in the sidebar"');
@@ -304,7 +306,7 @@ try {
 }
 
 const buttons = created.filter((node) => node.props.role === 'menuitem');
-assert.equal(buttons.length, 9, 'all rows must render as host menu items');
+assert.equal(buttons.length, 11, 'all rows must render as host menu items');
 
 /** Plain text of one captured row. */
 function rowText(node) {
@@ -352,8 +354,15 @@ assert.deepEqual(
   [],
   'reset must persist an empty folded set',
 );
+assert.equal(
+  storage.getItem('dsh-sidebar-pins:seeded-local-workbench:v1'),
+  '1',
+  'the first explicit choice must consume the one-time workbench seed',
+);
 
-// === Session 2: reload must keep the choice ==============================
+// === Session 2: an upgrading profile (stored set, no seed marker) =======
+// Simulate a profile that chose its folded set before local-workbench shipped.
+storage.removeItem('dsh-sidebar-pins:seeded-local-workbench:v1');
 storage.setItem('dsh-sidebar-pins:folded:v1', JSON.stringify(['love']));
 styleTags.length = 0;
 const reloadedExports = loadBundle(PANELS.map((entry) => entry.options.label()));
@@ -364,8 +373,12 @@ reloadedExports.apply(reloadCtx);
 const reloadHidden = domRows.filter((row) => row.hidden).map((row) => row.getAttribute('aria-label'));
 assert.deepEqual(
   reloadHidden,
-  ['爱'],
-  'reload must hide exactly the panel chosen last session (and restore the other two)',
+  ['爱', '本地工作台'],
+  'reload must hide the panel chosen last session plus the one-time workbench seed',
+);
+assert.ok(
+  JSON.parse(storage.getItem('dsh-sidebar-pins:folded:v1')).includes('local-workbench'),
+  'the one-time seed must persist local-workbench into an existing folded set',
 );
 
 // === Boot race: rows that render late must still get the flag ============

@@ -42,10 +42,19 @@
 const NS = 'dsh-sidebar-pins';
 
 /** Panels folded into More when this profile has never chosen otherwise. */
-const DEFAULT_FOLDED = ['remote-wsl', 'paper-os', 'love'];
+const DEFAULT_FOLDED = ['remote-wsl', 'paper-os', 'love', 'local-workbench'];
 
 /** localStorage key holding the folded id list (absent = never chosen). */
 const STORAGE_KEY = `${NS}:folded:v1`;
+
+/**
+ * One-time marker for profiles that stored a folded set before the workbench
+ * panel existed. A stored set suppresses every later DEFAULT_FOLDED addition,
+ * so without this seed an upgrading profile would show the new panel in the
+ * column while a fresh install would fold it. The seed runs once and is then
+ * forgotten, so the user's own later unfold choice always wins.
+ */
+const WORKBENCH_SEED_KEY = `${NS}:seeded-local-workbench:v1`;
 
 const DICTIONARY = {
   zh: {
@@ -91,7 +100,27 @@ function readFolded() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw === null) return new Set(DEFAULT_FOLDED);
     const parsed = JSON.parse(raw);
-    if (Array.isArray(parsed)) return new Set(parsed.filter((id) => typeof id === 'string'));
+    if (Array.isArray(parsed)) {
+      const set = new Set(parsed.filter((id) => typeof id === 'string'));
+      // Read the marker separately: a blocked read still counts as "not seeded
+      // yet", so the in-memory set below carries the new default this session.
+      let seedNeeded = true;
+      try {
+        seedNeeded = localStorage.getItem(WORKBENCH_SEED_KEY) === null;
+      } catch {
+        /* treat unreadable storage as an unseeded profile */
+      }
+      if (seedNeeded) {
+        if (!set.has('local-workbench')) set.add('local-workbench');
+        try {
+          localStorage.setItem(WORKBENCH_SEED_KEY, '1');
+          localStorage.setItem(STORAGE_KEY, JSON.stringify([...set]));
+        } catch {
+          /* storage blocked: the seeded set still applies for this session */
+        }
+      }
+      return set;
+    }
   } catch {
     /* unreadable or blocked storage: fall back to the shipped default */
   }
@@ -103,6 +132,12 @@ function writeFolded(next) {
   folded = next;
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify([...next]));
+    // The first explicit choice consumes the one-time workbench seed: without
+    // this, a fresh profile that unfolds the workbench would have it re-added
+    // on the next boot, because no stored set existed when the seed check ran.
+    if (localStorage.getItem(WORKBENCH_SEED_KEY) === null) {
+      localStorage.setItem(WORKBENCH_SEED_KEY, '1');
+    }
   } catch {
     /* storage full or blocked: the in-memory choice still applies this session */
   }

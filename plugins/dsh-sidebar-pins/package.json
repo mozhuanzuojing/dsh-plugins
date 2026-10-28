@@ -1,6 +1,6 @@
 {
   "name": "dsh-sidebar-pins",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "description": "Fold the left sidebar's global panel entries into the More menu: lists every panel row with a pin toggle, so chosen entries leave the sidebar without losing their panel.",
   "type": "module",

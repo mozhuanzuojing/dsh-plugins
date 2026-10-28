@@ -8,7 +8,8 @@
 
 ## 它做什么
 
-- 自己保存折叠集合（`localStorage`，键 `dsh-sidebar-pins:folded:v1`）；首次运行用 `DEFAULT_FOLDED`（`remote-wsl`、`paper-os`、`love`）。
+- 自己保存折叠集合（`localStorage`，键 `dsh-sidebar-pins:folded:v1`）；首次运行用 `DEFAULT_FOLDED`（`remote-wsl`、`paper-os`、`love`、`local-workbench`）。
+  - 已存过折叠集合的老 profile 不会自动获得后加的默认项，所以升级时有一次性的 `seeded-local-workbench:v1` 迁移：把 `local-workbench` 并入已存集合并立刻落盘；之后用户的「显示在侧栏」选择照常生效。
 - 给匹配的侧栏行打标记 `data-sidebar-pins-hidden`，由一条静态 CSS 规则隐藏。**标签文本不进入 CSS**。
 - 在「更多」里提供两个分组：「打开面板」与「侧栏显示」；每行一个动作（宿主 `MenuItemButton`）。
 - 切换时同步调用宿主 `onPinnedChange`，让宿主自身的过滤与本插件在本次会话内保持一致。
@@ -17,7 +18,7 @@
 
 | 项 | 现状 | 原因 |
 |---|---|---|
-| 默认折叠集合 | 写死三个 id | 宿主未提供「默认收起」配置位 |
+| 默认折叠集合 | 写死四个 id | 宿主未提供「默认收起」配置位 |
 | 新装侧栏插件 | 不会自动收进「更多」 | 同上；需手动点一次，之后记住 |
 | 选择持久化 | 本插件 localStorage | 宿主 `unpinned` 不持久化（官方如此） |
 | 行定位方式 | 打标记 + aria-label 配对 | 侧栏行 DOM 不暴露 panel id |
