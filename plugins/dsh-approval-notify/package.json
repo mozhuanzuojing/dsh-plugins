@@ -1,6 +1,6 @@
 {
   "name": "dsh-approval-notify",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "Desktop notification when DSH is waiting for an approval, so a pending prompt is not missed while you are in another window.",
   "type": "module",

@@ -39,11 +39,29 @@ const DICTIONARY = {
   },
 };
 
-/** Keys already notified, so one approval never produces a burst of toasts. */
-const notified = new Set();
+/**
+ * Requests already notified, by object identity.
+ *
+ * The host dispatches an approval as
+ * `ctx.waterfall(target, 'approval/request', req, …)`, where `req` carries only
+ * `{ agent, toolName, callId?, reason?, signal? }` — there is no `key` and no
+ * `id` on it (the audit `id` is a local variable inside `approval.request()`).
+ * A dedupe key built from request DATA therefore degrades to `callId ?? reason`,
+ * and two ordinary distinct approvals sharing a reason string (the same tool
+ * asking twice) would collapse into one notification — the exact missed approval
+ * this plugin exists to prevent.
+ *
+ * Object identity is the honest key: one dispatch is one object, a fresh
+ * approval is a fresh object. A WeakSet also lets answered requests be collected
+ * instead of accumulating for the life of the session.
+ */
+const notified = new WeakSet();
 
 /** Warn about a permanently unavailable channel once, not on every approval. */
 let warned = null;
+
+/** Monotonic per-dispatch counter, used only to give each toast a distinct tag. */
+let toastSeq = 0;
 
 /**
  * Whether the window is out of sight, which is the only case worth a toast.
@@ -69,14 +87,27 @@ function windowIsOutOfSight() {
 }
 
 /**
- * Stable identity for one approval, so dedupe works across repeated events.
+ * The notification body: what is asking, and why.
+ *
+ * `toolName` is always present on the host request while `reason` is optional,
+ * so the tool name leads and the reason follows when there is one. Without the
+ * tool name the toast just says "an approval is pending", which forces the user
+ * to switch windows to find out what — defeating the point of notifying.
  *
  * @param request - the approval request payload
- * @returns a key usable in a Set
+ * @param t - locale lookup for this plugin's namespace
+ * @returns the body text for the notification
  */
-function approvalKey(request) {
-  if (request === null || typeof request !== 'object') return String(request);
-  return String(request.key ?? request.callId ?? request.id ?? request.reason ?? 'unknown');
+function describeRequest(request, t) {
+  const tool = typeof request?.toolName === 'string' ? request.toolName.trim() : '';
+  // Only the fields the host actually puts on the request are read here:
+  // `toolName` (always) and `reason` (optional). `displayReason` exists on the
+  // CLIENT's PendingApproval, not on the request dispatched to the waterfall.
+  const reason = typeof request?.reason === 'string' ? request.reason.trim() : '';
+  if (tool !== '' && reason !== '') return `${tool} · ${reason}`;
+  if (tool !== '') return `${tool} · ${t('notify.fallbackReason')}`;
+  if (reason !== '') return reason;
+  return t('notify.fallbackReason');
 }
 
 /**
@@ -86,9 +117,12 @@ function approvalKey(request) {
  * @param t - locale lookup for this plugin's namespace
  */
 function notifyApproval(request, t) {
-  const key = approvalKey(request);
-  if (notified.has(key)) return;
-  notified.add(key);
+  // Identity dedupe: the same dispatch must not produce a burst, while a new
+  // approval carrying an identical reason still notifies (see the WeakSet note).
+  if (request !== null && typeof request === 'object') {
+    if (notified.has(request)) return;
+    notified.add(request);
+  }
 
   if (typeof Notification !== 'function') {
     if (warned !== 'unsupported') {
@@ -105,16 +139,10 @@ function notifyApproval(request, t) {
     return;
   }
 
-  const reason =
-    typeof request?.displayReason === 'string' && request.displayReason !== ''
-      ? request.displayReason
-      : typeof request?.reason === 'string' && request.reason !== ''
-        ? request.reason
-        : t('notify.fallbackReason');
-
   const toast = new Notification(t('notify.title'), {
-    body: reason,
-    tag: `${NS}:${key}`,
+    body: describeRequest(request, t),
+    // One tag per approval dispatch; the tag only collapses a re-shown toast.
+    tag: `${NS}:${toastSeq += 1}`,
     // Let the OS keep it around until the user deals with it; an approval that
     // auto-vanishes is the thing this plugin exists to prevent.
     requireInteraction: true,

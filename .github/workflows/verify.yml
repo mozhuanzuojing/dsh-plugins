@@ -62,6 +62,8 @@ jobs:
           node-version: '22'
       - name: Behaviour suite
         run: node plugins/dsh-approval-notify/_verify/notify.test.mjs
+      - name: Adversarial probes
+        run: node plugins/dsh-approval-notify/_verify/review-probes.mjs
 
   # dsh-plugin-love builds and tests with its own devDependencies.
   love:

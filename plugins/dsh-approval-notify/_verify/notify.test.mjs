@@ -164,15 +164,24 @@ function makeEnv({ focused = false, permission = 'granted', throwOnNotify = fals
   env.restore();
 }
 
-// --- 5. one approval, one toast ----------------------------------------
+// --- 5. dedupe is by dispatch identity, not by request data ------------
+// The host request has no key/id, only optional callId and reason, so a
+// data-derived key would merge distinct approvals that share a reason string.
 {
   const env = makeEnv({ focused: false });
   const handler = env.handlers.get('approval/request');
-  const request = { key: 'dup', reason: 'x' };
+  const request = { toolName: 't', reason: 'x' };
   handler(request, () => 'ok');
   handler(request, () => 'ok');
-  handler({ ...request }, () => 'ok');
-  verdict('deduplicates repeated events for the same approval', env.toasts.length === 1, `${env.toasts.length} toast(s) for 3 events`);
+  verdict('the same dispatch notifies once', env.toasts.length === 1, `${env.toasts.length} toast(s) for 2 events on one request object`);
+
+  // A different request with identical data is a different approval.
+  handler({ toolName: 't', reason: 'x' }, () => 'ok');
+  verdict(
+    'a distinct approval with identical data still notifies',
+    env.toasts.length === 2,
+    `${env.toasts.length} toast(s): the second, separate approval must not be swallowed`,
+  );
   env.restore();
 }
 
@@ -227,6 +236,32 @@ function makeEnv({ focused = false, permission = 'granted', throwOnNotify = fals
     `returned=${JSON.stringify(returned)}, warnings=${env.warnings.length}`,
   );
   globalThis.Notification = savedNotification;
+  env.restore();
+}
+
+// --- 9. the body identifies what is asking ------------------------------
+// toolName is always on the host request; reason is optional. A body without the
+// tool name forces the user to switch windows to learn what is being asked.
+{
+  const env = makeEnv({ focused: false });
+  env.handlers.get('approval/request')({ toolName: 'run_command', reason: '需要执行命令' }, () => 'ok');
+  const body = String(env.toasts[0]?.options?.body ?? '');
+  verdict(
+    'the body names the tool alongside the reason',
+    body.includes('run_command') && body.includes('需要执行命令'),
+    `body=${JSON.stringify(body)}`,
+  );
+  env.restore();
+}
+{
+  const env = makeEnv({ focused: false });
+  env.handlers.get('approval/request')({ toolName: 'delete_path' }, () => 'ok');
+  const body = String(env.toasts[0]?.options?.body ?? '');
+  verdict(
+    'a reason-less request still names the tool',
+    body.includes('delete_path'),
+    `body=${JSON.stringify(body)} (reason is optional on the host request)`,
+  );
   env.restore();
 }
 
