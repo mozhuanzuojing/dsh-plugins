@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Approval notifications",
+    "description": "Raise a desktop notification while DSH waits for an approval, so a pending prompt is not missed from another window"
+  }
+}

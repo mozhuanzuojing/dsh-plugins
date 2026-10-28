@@ -51,6 +51,18 @@ jobs:
           DSH_REACT_HOME: ${{ runner.temp }}/reacthome
         run: node plugins/dsh-sidebar-pins/_verify/review-probes.mjs
 
+  # dsh-approval-notify: pure logic, no React, no dependencies. Its suite runs
+  # the approval waterfall for real and asserts the plugin can never stall it.
+  approval-notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Behaviour suite
+        run: node plugins/dsh-approval-notify/_verify/notify.test.mjs
+
   # dsh-plugin-love builds and tests with its own devDependencies.
   love:
     runs-on: ubuntu-latest

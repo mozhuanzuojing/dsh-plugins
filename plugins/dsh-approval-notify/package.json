@@ -1,0 +1,58 @@
+{
+  "name": "dsh-approval-notify",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Desktop notification when DSH is waiting for an approval, so a pending prompt is not missed while you are in another window.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "author": "磨砖做镜 (mozhuanzuojing) <mozhuanzuojing2020@163.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mozhuanzuojing/dsh-plugins.git",
+    "directory": "plugins/dsh-approval-notify"
+  },
+  "homepage": "https://github.com/mozhuanzuojing/dsh-plugins/tree/main/plugins/dsh-approval-notify#readme",
+  "bugs": {
+    "url": "https://github.com/mozhuanzuojing/dsh-plugins/issues"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json",
+    "./client": "./client/index.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "src",
+    "client",
+    "locale",
+    "cordis.patch.yml",
+    "icon.svg",
+    "README.md",
+    "package.json"
+  ],
+  "icon": "./icon.svg",
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "notification",
+    "approval",
+    "plugin"
+  ],
+  "engines": {
+    "dsh": ">=0.2.0-rc.2"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-locale"
+      ]
+    }
+  },
+  "license": "MIT"
+}

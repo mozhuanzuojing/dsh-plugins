@@ -8,13 +8,15 @@
 |---|---|---|
 | [dsh-sidebar-pins](plugins/dsh-sidebar-pins/) | 把左侧栏的全局面板条目收进「更多」菜单，逐项控制归属，选择会被记住 | 0.1.0 |
 | [dsh-plugin-love](plugins/dsh-plugin-love/) | 「爱」：读第三方 DSH 插件源码，按后端/前端/UI/UX/性能/AI 时代六维给出带证据的审查（工具 `love_review`） | 0.1.1 |
+| [dsh-approval-notify](plugins/dsh-approval-notify/) | 等待审批时弹系统通知：切到别的窗口也不会漏掉待审批提示 | 0.1.0 |
 
-两个插件都是 **bundle 形态**，装法相同（见下）。各自的配置项、设计边界与已知限制写在各自目录的 README 里。
+三个插件都是 **bundle 形态**，装法相同（见下）。各自的配置项、设计边界与已知限制写在各自目录的 README 里。
 
 | 插件 | 平台 | 额外要求 |
 |---|---|---|
 | dsh-sidebar-pins | 任意 | 无 |
 | dsh-plugin-love | 任意 | 无（构建/测试需要 `pnpm install`） |
+| dsh-approval-notify | 桌面端（Electron）或已授予通知权限的浏览器 | 无 |
 
 ## 独立仓库的插件
 
