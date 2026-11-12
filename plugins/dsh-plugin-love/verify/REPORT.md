@@ -1,8 +1,9 @@
 # 爱 · Love — 实现与验证报告
 
-> 日期：2026-10-27 ｜ 插件目录：`D:\project\dsh1\dsh-plugin-love`
+> 日期：2026-10-27 ｜ 插件目录：`D:\project\dsh1\dsh-plugins\plugins\dsh-plugin-love`
 > 命名：**爱 / Love**——爱是出发点；`love_review` 是方法。
 > 结论：**PASS**——代码、构建、真实第三方目标（capture/schedule/dsh-kit/remote-wsl）、自审、工具 e2e、**桌面 GUI 实际渲染**全部通过。唯一未闭环项是「已启动的宿主进程仍在跑旧构建」，重载/重启后即吃到 `RULES_VERSION=2`（见 §6.2）。
+> **路径说明（2026-11-12）**：原开发目录已删除；本报告所有路径均指仓库副本 `plugins/dsh-plugin-love`。
 
 ## 1. 交付物
 
@@ -84,7 +85,7 @@
 
 ```powershell
 $node='C:\Users\l\.dsh\dsh-runtimes\dsh-primary-runtime\dependencies\node\bin\node.exe'
-cd D:\project\dsh1\dsh-plugin-love
+cd D:\project\dsh1\dsh-plugins\plugins\dsh-plugin-love
 
 # 一条命令跑完类型检查 + 测试 + 构建（scripts/verify.ts，内部用 process.execPath，不碰 PATH node）
 & $node scripts\verify.ts
@@ -122,7 +123,7 @@ cd D:\project\dsh1\dsh-plugin-love
 安装/投影：
 
 - `plugin_manager install_bundle` → `application: applied`，`enabled: true`，`warnings: []`（首次安装时 version 为 0.1.0；当前包版本 0.1.1）。
-- 当前 profile：`package.json` 有 `"dsh-plugin-love": "link:D:/project/dsh1/dsh-plugin-love"`，`dsh.profile.bundles` 已包含该 bundle；`node_modules/dsh-plugin-love` 为 Junction。
+- 当前 profile：已不含 `dsh-plugin-love` 依赖（原 `link:` 指向的开发目录已于 2026-11-12 删除）；如需安装，把 `link:` 指向仓库副本 `plugins/dsh-plugin-love`。
 - `Tool.listTools`：`love_review.parameters` 为标准 JSON Schema（见 §3.2）。
 - `Config.listConfigs`：`include:dsh-plugin-love` 状态 `absent`——这是**没有导出 Config** 的正常结果，不是未激活。
 - `Slots.listSubTree`：上一轮页面 slot 树里没有 `love`；当时判断是页面未刷新。本轮改用真实浏览器复核（见 §6），不再用 slot 树推断。
@@ -178,7 +179,7 @@ cd D:\project\dsh1\dsh-plugin-love
 ### 7.2 改名后复验（爱 / Love）
 
 - Subagent：`da8c325f-6a4c-4b29-a045-8be9611931b9`，2026-10-26。
-- 调用：`love_review({ target: "D:\\project\\dsh1\\dsh-plugin-love\\test\\fixtures\\bad-plugin", lang: "zh", depth: "standard" })`。
+- 调用：`love_review({ target: "D:\\project\\dsh1\\dsh-plugins\\plugins\\dsh-plugin-love\\test\\fixtures\\bad-plugin", lang: "zh", depth: "standard" })`。
 - 结果：**成功**。首行 `# 爱 · 审查报告 · 坏样板 v0.0.1`；总分 **31 / 100**；「如果只改三件事」与结尾「把刺留在代码上，不留在人身上。」都在。
 - 说明：工具名仍是 `love_review`（方法），插件名变为「爱 / Love」（出发点）；旧包名 / 旧路由 / 旧存储目录已全部替换为 `dsh-plugin-love` / `/api/love` / `$DSH_HOME/love`。
 - 清理：profile 里指向旧目录的 `dsh-plugin-with-love` junction 已删除（目标目录已随改名不存在）。
