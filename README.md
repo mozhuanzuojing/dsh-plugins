@@ -6,15 +6,15 @@
 
 | 插件 | 一句话 | 版本 |
 |---|---|---|
-| [dsh-sidebar-pins](plugins/dsh-sidebar-pins/) | 把左侧栏的全局面板条目收进「更多」菜单，逐项控制归属，选择会被记住 | 0.1.2 |
 | [dsh-plugin-love](plugins/dsh-plugin-love/) | 「爱」：读第三方 DSH 插件源码，按后端/前端/UI/UX/性能/AI 时代六维给出带证据的审查（工具 `love_review`） | 0.1.1 |
 | [dsh-approval-notify](plugins/dsh-approval-notify/) | 等待审批时弹系统通知：切到别的窗口也不会漏掉待审批提示 | 0.1.1 |
 
-三个插件都是 **bundle 形态**，装法相同（见下）。各自的配置项、设计边界与已知限制写在各自目录的 README 里。
+两个插件都是 **bundle 形态**，装法相同（见下）。各自的配置项、设计边界与已知限制写在各自目录的 README 里。
+
+> 注：`dsh-sidebar-pins` 已于 2026-11-12 从本仓库移除，不再随本仓库分发。
 
 | 插件 | 平台 | 额外要求 |
 |---|---|---|
-| dsh-sidebar-pins | 任意 | 无 |
 | dsh-plugin-love | 任意 | 无（构建/测试需要 `pnpm install`） |
 | dsh-approval-notify | 桌面端（Electron）或已授予通知权限的浏览器 | 无 |
 
@@ -28,18 +28,18 @@
 
 ## 安装某个插件
 
-以 `dsh-sidebar-pins` 为例（其它插件同理，替换目录名即可）。
+以 `dsh-approval-notify` 为例（其它插件同理，替换目录名即可）。
 
 **1. 让 profile 认识这个包** —— 编辑 `~/.dsh/profiles/<profile>/package.json`，在 `dependencies` 里加一条：
 
 ```json
-"dsh-sidebar-pins": "link:D:/path/to/dsh-plugins/plugins/dsh-sidebar-pins"
+"dsh-approval-notify": "link:D:/path/to/dsh-plugins/plugins/dsh-approval-notify"
 ```
 
 **2. 把它加进 bundle 列表** —— 同一个文件里的 `dsh.profile.bundles` 末尾追加：
 
 ```json
-"dsh-sidebar-pins"
+"dsh-approval-notify"
 ```
 
 **3. 用官方 CLI 安装依赖**（不要手改 `node_modules`）：
@@ -53,7 +53,7 @@ dsh plugin --profile <profile> install
 Windows 上 `link:` 需要目录联接（Junction）已存在时才能解析；若启动日志报 `cannot resolve profile bundle`，先建联接再重跑第 3 步：
 
 ```powershell
-New-Item -ItemType Junction -Path "$env:USERPROFILE\.dsh\profiles\<profile>\node_modules\dsh-sidebar-pins" -Target "D:\path\to\dsh-plugins\plugins\dsh-sidebar-pins"
+New-Item -ItemType Junction -Path "$env:USERPROFILE\.dsh\profiles\<profile>\node_modules\dsh-approval-notify" -Target "D:\path\to\dsh-plugins\plugins\dsh-approval-notify"
 ```
 
 ## 开发约定

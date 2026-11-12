@@ -43,7 +43,8 @@
   ],
   "license": "MIT",
   "engines": {
-    "node": ">=22"
+    "node": ">=22",
+    "dsh": ">=0.2.2-rc.2"
   },
   "scripts": {
     "build": "node scripts/build.ts",
