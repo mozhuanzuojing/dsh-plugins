@@ -62,7 +62,7 @@ New-Item -ItemType Junction -Path "$env:USERPROFILE\.dsh\profiles\<profile>\node
 - 客户端半（`client/index.js`）是手写的 lazy-CJS bundle，形状固定为 `window.__ModuleLoader__.load({ id, factory })`；不引入构建步骤，也不写 JSX。整份脚本必须包在 IIFE 里：宿主会把多个 client 拼成一份 combo script，顶层 `const`/`let` 重名会直接让 web boot 失败（`Identifier 'NS' has already been declared`）。
 - 界面文本走宿主 locale 服务；菜单行复用宿主 `@deepseek-ai/dsh-client-ui-primitives` 的原语，不自己画按钮。
 - 每个插件自带 `_verify/`：行为回归、对抗探针、变异测试。三个都必须绿。
-- **上线前必跑拼接校验**：`node scripts/check-client-combo.mjs`（CI 已在 `client-syntax` job 里跑）。它把本仓库所有 client 按宿主的 combo 方式拼成一份再编译——`node --check` 逐文件查不出跨插件重名，而这个错误会让整页 boot 失败。也可加参数扫真实 profile：
+- **上线前必跑拼接校验**：`node scripts/check-client-combo.mjs`（本仓库不带 GitHub Actions，上线前手动跑；建议挂到 git pre-commit）。它把本仓库所有 client 按宿主的 combo 方式拼成一份再编译——`node --check` 逐文件查不出跨插件重名，而这个错误会让整页 boot 失败。也可加参数扫真实 profile：
   `node scripts/check-client-combo.mjs "$env:USERPROFILE\.dsh\profiles\desktop\node_modules"`
 
 ## 许可
